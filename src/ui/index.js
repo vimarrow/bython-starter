@@ -1,22 +1,27 @@
 import 'babel-polyfill';
-import React from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
-import { withStyles } from '@material-ui/styles';
+import Router from './pages/Router';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import { createLogger } from 'redux-logger';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import reducers from './redux/index';
+import initialState from './redux/initialState';
 
-const styles = {
-	root: {
-		display: 'flex',
-		width: '100vw',
-		flexDirection: 'column'
-	}
+let middlewareList = [thunk];
+if (process.env.NODE_ENV === 'development') {
+	const logger = createLogger();
+	middlewareList = [...middlewareList, logger];
 }
-function app(props) {
-	const { classes } = props;
-	return (
-		<div className={classes.root}>
-			<h1>Hello World!</h1>
-		</div>
-	);
-}
-const App = withStyles(styles)(app);
-ReactDOM.render(<App />, document.getElementById("app"));
+const middleware = applyMiddleware(...middlewareList);
+const store = createStore(reducers, initialState, composeWithDevTools(middleware)); 
+
+ReactDOM.render(
+	<Provider store={store}>
+		<Suspense fallback={<span>something's burning...</span>}>
+			<Router />
+		</Suspense>
+	</Provider>
+	, document.getElementById('app'));
