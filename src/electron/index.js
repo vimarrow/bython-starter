@@ -1,0 +1,50 @@
+const electron = require("electron");
+const app = electron.app;
+const BrowserWindow = electron.BrowserWindow;
+const path = require("path");
+const isDev = require("electron-is-dev");
+
+let mainWindow;
+
+// info: https://github.com/electron/electron/issues/9691
+if (process.platform === 'win32') {
+	app.commandLine.appendSwitch('high-dpi-support', 'true');
+	app.commandLine.appendSwitch('force-device-scale-factor', '1');
+}
+
+function createWindow() {
+	mainWindow = new BrowserWindow({
+		width: 1248,
+		height: 768,
+		show: true,
+		title: "Bytex Hackathon",
+		webPreferences: {
+			nativeWindowOpen: true
+		}
+	});
+
+	mainWindow.loadURL(
+		isDev ? "http://localhost:8080" : `file://${path.join(__dirname, "../../build/index.html")}`
+	);
+	mainWindow.once('ready-to-show', () => {
+		mainWindow.show();
+		if (isDev) {
+			mainWindow.webContents.openDevTools();
+		}
+	});
+	mainWindow.on("closed", () => (mainWindow = null));
+}
+
+app.on("ready", createWindow);
+
+app.on("window-all-closed", () => {
+	if (process.platform !== "darwin") {
+		app.quit();
+	}
+});
+
+app.on("activate", () => {
+	if (mainWindow === null) {
+		createWindow();
+	}
+});
