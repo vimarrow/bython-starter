@@ -33,7 +33,7 @@
     "@material-ui/icons": "^4.4.3",
     "axios": "^0.21.1",
     "babel-polyfill": "^6.26.0",
-    "electron": "^7.2.4",
+    "electron": "^9.4.0",
     "electron-is-dev": "^1.1.0",
     "immer": "^8.0.1",
     "r3lab-server": "^0.1.2",
